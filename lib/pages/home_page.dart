@@ -494,7 +494,7 @@ class _HomePageState extends State<HomePage> {
                             color: Theme.of(
                               context,
                             ).colorScheme.surfaceVariant.withOpacity(0.5),
-                            title: 'Neither Urgent nor Important',
+                            title: 'Neither Urgent Nor Important',
                             scrollController: _quadrant4ScrollController,
                           ),
                         ),
