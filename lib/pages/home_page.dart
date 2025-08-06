@@ -54,6 +54,7 @@ class _HomePageState extends State<HomePage> {
             final task = Task(name: taskName, quadrant: quadrantInt);
             task.date = _selectedDate; // Set the date for the task
             await _taskService.addTask(task);
+            _taskNameController.clear();
             setState(() {});
             // Auto-scroll to show the newly added task
             _scrollToNewTask(quadrant);
@@ -158,7 +159,7 @@ class _HomePageState extends State<HomePage> {
     task.name = newName;
     task.quadrant = newQuadrant;
     task.updatedAt = DateTime.now();
-
+    _taskNameController.clear();
     // Save to database
     await _taskService.updateTask(task);
 
@@ -193,7 +194,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  List<Task> _tasks = [];
   final TaskService _taskService = TaskService();
   bool _isLoading = true;
 
@@ -239,8 +239,18 @@ class _HomePageState extends State<HomePage> {
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: color,
-        // Add border to clearly separate quadrants
-        border: Border.all(color: Colors.grey.shade300, width: 1),
+        borderRadius: BorderRadius.circular(12), // Rounded corners
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
       child: Stack(
         children: <Widget>[
@@ -250,20 +260,27 @@ class _HomePageState extends State<HomePage> {
               // Quadrant title at the top
               Text(
                 title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
               Expanded(
                 // Show placeholder text when no tasks exist
                 child:
                     tasks.isEmpty
-                        ? const Center(
+                        ? Center(
                           child: Text(
                             'No task yet',
-                            style: TextStyle(color: Colors.grey),
+                            style: TextStyle(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withOpacity(0.6),
+                              fontSize: 12,
+                            ),
                           ),
                         )
                         : ListView.builder(
@@ -329,8 +346,10 @@ class _HomePageState extends State<HomePage> {
           Positioned(
             bottom: 8,
             right: 8,
-            child: ElevatedButton(
+            child: FloatingActionButton.small(
               onPressed: () => onPlusButton(quadrant),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
               child: Icon(Icons.add),
             ),
           ),
@@ -351,6 +370,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('Eisenhower Matrix'),
         centerTitle: true,
+        toolbarHeight: 36, // Reduced from default 56 to 40
         actions: [
           TextButton.icon(
             onPressed: _showDatePicker,
@@ -360,6 +380,7 @@ class _HomePageState extends State<HomePage> {
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
+                fontSize: 10,
               ),
             ),
           ),
@@ -415,118 +436,73 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           Expanded(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                bool isLargeScreen = constraints.maxWidth > 600;
-
-                // Determine layout based on screen width
-                // 600px is a common breakpoint for tablet/desktop
-                if (isLargeScreen) {
-                  // FULL SCREEN 2x2 grid (no scrolling)
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  // First row
+                  Expanded(
+                    child: Row(
                       children: [
-                        // First row
                         Expanded(
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: _buildQuadrantContainer(
-                                  tasks: quadrant1Tasks,
-                                  quadrant: Quadrant.one,
-                                  color:
-                                      Theme.of(context).colorScheme.background,
-                                  title: 'Quadrant 1',
-                                  scrollController: _quadrant1ScrollController,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: _buildQuadrantContainer(
-                                  tasks: quadrant2Tasks,
-                                  quadrant: Quadrant.two,
-                                  color: Colors.teal[200]!,
-                                  title: 'Quadrant 2',
-                                  scrollController: _quadrant2ScrollController,
-                                ),
-                              ),
-                            ],
+                          child: _buildQuadrantContainer(
+                            tasks: quadrant1Tasks,
+                            quadrant: Quadrant.one,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.errorContainer.withOpacity(0.3),
+                            title: 'Urgent & Important',
+                            scrollController: _quadrant1ScrollController,
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        // Second row
+                        const SizedBox(width: 8),
                         Expanded(
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: _buildQuadrantContainer(
-                                  tasks: quadrant3Tasks,
-                                  quadrant: Quadrant.three,
-                                  color: Colors.teal[300]!,
-                                  title: 'Quadrant 3',
-                                  scrollController: _quadrant3ScrollController,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: _buildQuadrantContainer(
-                                  tasks: quadrant4Tasks,
-                                  quadrant: Quadrant.four,
-                                  color: Colors.teal[400]!,
-                                  title: 'Quadrant 4',
-                                  scrollController: _quadrant4ScrollController,
-                                ),
-                              ),
-                            ],
+                          child: _buildQuadrantContainer(
+                            tasks: quadrant2Tasks,
+                            quadrant: Quadrant.two,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primaryContainer.withOpacity(0.4),
+                            title: 'Important, Not Urgent',
+                            scrollController: _quadrant2ScrollController,
                           ),
                         ),
                       ],
                     ),
-                  );
-                } else {
-                  // For small screens, use the original layout
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: GridView.count(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 8,
-                      mainAxisSpacing: 8,
-                      childAspectRatio: 0.8,
-                      children: <Widget>[
-                        _buildQuadrantContainer(
-                          tasks: quadrant1Tasks,
-                          quadrant: Quadrant.one,
-                          color: Theme.of(context).colorScheme.background,
-                          title: 'Quadrant 1',
-                          scrollController: _quadrant1ScrollController,
+                  ),
+                  const SizedBox(height: 8),
+                  // Second row
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _buildQuadrantContainer(
+                            tasks: quadrant3Tasks,
+                            quadrant: Quadrant.three,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.tertiaryContainer.withOpacity(0.4),
+                            title: 'Urgent, Not Important',
+                            scrollController: _quadrant3ScrollController,
+                          ),
                         ),
-                        _buildQuadrantContainer(
-                          tasks: quadrant2Tasks,
-                          quadrant: Quadrant.two,
-                          color: Colors.teal[200]!,
-                          title: 'Quadrant 2',
-                          scrollController: _quadrant2ScrollController,
-                        ),
-                        _buildQuadrantContainer(
-                          tasks: quadrant3Tasks,
-                          quadrant: Quadrant.three,
-                          color: Colors.teal[300]!,
-                          title: 'Quadrant 3',
-                          scrollController: _quadrant3ScrollController,
-                        ),
-                        _buildQuadrantContainer(
-                          tasks: quadrant4Tasks,
-                          quadrant: Quadrant.four,
-                          color: Colors.teal[400]!,
-                          title: 'Quadrant 4',
-                          scrollController: _quadrant4ScrollController,
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: _buildQuadrantContainer(
+                            tasks: quadrant4Tasks,
+                            quadrant: Quadrant.four,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.surfaceVariant.withOpacity(0.5),
+                            title: 'Neither Urgent nor Important',
+                            scrollController: _quadrant4ScrollController,
+                          ),
                         ),
                       ],
                     ),
-                  );
-                }
-              },
+                  ),
+                ],
+              ),
             ),
           ),
         ],
