@@ -73,6 +73,9 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
     final isSmallScreen = MediaQuery.of(context).size.width < 600;
 
     return AlertDialog(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      surfaceTintColor: Theme.of(context).colorScheme.surfaceTint,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       // Make dialog more compact on small screens
       contentPadding: EdgeInsets.fromLTRB(
         24.0,
@@ -84,7 +87,11 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
         child: Text(
           widget.isEditing ? 'Edit Task' : 'Add a Task',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: isSmallScreen ? 18 : 20),
+          style: TextStyle(
+            fontSize: isSmallScreen ? 18 : 20,
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
         ),
       ),
       content: SingleChildScrollView(
@@ -94,13 +101,19 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
           children: [
             TextField(
               autofocus: true,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Enter task name',
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                filled: true,
+                fillColor: Theme.of(
+                  context,
+                ).colorScheme.surfaceVariant.withOpacity(0.3),
               ),
               controller: widget.controller,
               maxLines: isSmallScreen ? 1 : 2,
@@ -123,8 +136,9 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
               Text(
                 'Move to Quadrant:',
                 style: TextStyle(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                   fontSize: isSmallScreen ? 14 : 16,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               SizedBox(height: isSmallScreen ? 8 : 12),
@@ -137,8 +151,13 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceVariant.withOpacity(0.3),
                   ),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<int>(
@@ -194,12 +213,20 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
                     onPressed: _handleSubmit,
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(
-                        vertical: isSmallScreen ? 10 : 12,
+                        vertical: isSmallScreen ? 12 : 14,
+                      ),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     child: Text(
                       widget.isEditing ? 'Update Task' : 'Add Task',
-                      style: TextStyle(fontSize: isSmallScreen ? 14 : 16),
+                      style: TextStyle(
+                        fontSize: isSmallScreen ? 14 : 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
@@ -209,12 +236,22 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
                     onPressed: _handleCancel,
                     style: OutlinedButton.styleFrom(
                       padding: EdgeInsets.symmetric(
-                        vertical: isSmallScreen ? 10 : 12,
+                        vertical: isSmallScreen ? 12 : 14,
+                      ),
+                      foregroundColor: Theme.of(context).colorScheme.onSurface,
+                      side: BorderSide(
+                        color: Theme.of(context).colorScheme.outline,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     child: Text(
                       'Cancel',
-                      style: TextStyle(fontSize: isSmallScreen ? 14 : 16),
+                      style: TextStyle(
+                        fontSize: isSmallScreen ? 14 : 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
